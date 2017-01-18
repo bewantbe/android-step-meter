@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ShowStep</string>
+    <string name="button_reset">Reset Counter</string>
+    <string name="button_restart">Restart Counter</string>
+</resources>

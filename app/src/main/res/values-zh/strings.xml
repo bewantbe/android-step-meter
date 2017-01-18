@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">记步器</string>
+    <string name="button_reset">记步清零</string>
+    <string name="button_restart">开新记录</string>
+</resources>
