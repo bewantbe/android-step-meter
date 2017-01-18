@@ -81,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<String> getStepList() {
         List<String> data = new ArrayList<String>();
         for (int i = 0; i < stepState.MAX_STEP_SAVE; i++) {
+            if (stepState.s_stop_time[i] == 0) {
+                continue;
+            }
             data.add("S=" + stepState.s_step[i]
                     + "  " + ISOTime(stepState.s_start_time[i])
                     + "\n   To " + ISOTime(stepState.s_stop_time[i]));

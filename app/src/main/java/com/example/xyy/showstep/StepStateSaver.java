@@ -60,6 +60,7 @@ public class StepStateSaver {
 
         stepRecFilePath = new File(context.getFilesDir(),
                 context.getString(R.string.step_record_file_name));
+        Log.i("StepStateSaver", "restartCounter(): getFilesDir: " + stepRecFilePath.getAbsolutePath());
         RandomAccessFile stepRecFile = null;
         try {
             // Without these two lines, there is "I/Process: Sending signal. PID: ???? SIG: 9" in mate 9.
@@ -108,6 +109,27 @@ public class StepStateSaver {
         editor.commit();
     }
 
+    private void updateStepFile() {
+        // most recent record the last
+        RandomAccessFile stepRecFile = null;
+        try {
+            stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
+            if (stepRecFile.length() < (3*BYTE_OF_LONG)) {
+                // nothing to update
+                return;
+            }
+            stepRecFile.seek(stepRecFile.length() - 3*BYTE_OF_LONG);
+            stepRecFile.writeLong(s_step[0]);
+            stepRecFile.writeLong(s_start_time[0]);
+            stepRecFile.writeLong(s_stop_time[0]);
+            stepRecFile.close();
+            Log.i("StepStateSaver", "restartCounter(): data updated");
+        } catch (IOException e) {
+            Log.e("StepStateSaver", "restartCounter(): IOException");
+            e.printStackTrace();
+        }
+    }
+
     public long step;
     public long stepDateTime = 0;
 
@@ -131,8 +153,15 @@ public class StepStateSaver {
 
     public void restartCounter() {
         if (stepSince() == 0) {
-            // No new step. So do nothing
-            return;
+            // No new step
+            if (s_step[0] == 0) {
+                // merge record
+                s_stop_time[0] = java.lang.System.currentTimeMillis();
+                resetCounter();
+                updateStepFile();
+                return;
+            }
+            // else have a new record
         }
 
         // save new value and shift old values
@@ -147,7 +176,6 @@ public class StepStateSaver {
         resetCounter();
 
         // Save to file
-        Log.i("StepStateSaver", "restartCounter(): getFilesDir: " + stepRecFilePath.getAbsolutePath());
         RandomAccessFile stepRecFile = null;
         try {
             stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
