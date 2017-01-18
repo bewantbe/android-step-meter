@@ -20,9 +20,20 @@ public class StepStateSaver {
     public long lastStepDateTime = 0;
 
     final int MAX_STEP_SAVE = 10;
-    public long s_step[] = null;
-    public long s_start_time[] = null;
-    public long s_stop_time[] = null;
+
+    public class StepItem {
+        public long count;
+        public long start_time;
+        public long stop_time;
+
+        public StepItem(long _count, long _start_time, long _stop_time) {
+            this.count = _count;
+            this.start_time = _start_time;
+            this.stop_time = _stop_time;
+        }
+    }
+
+    public StepItem sStep[] = null;
 
     final int BYTE_OF_LONG = 8;
 
@@ -49,13 +60,9 @@ public class StepStateSaver {
             lastStepDateTime = lastStepDateTimeDefault;
         }
 
-        s_step       = new long[MAX_STEP_SAVE];
-        s_start_time = new long[MAX_STEP_SAVE];
-        s_stop_time  = new long[MAX_STEP_SAVE];
+        sStep = new StepItem[MAX_STEP_SAVE];
         for (int i = MAX_STEP_SAVE-1; i >= 0; i--) {
-            s_step[i]       = 0;
-            s_start_time[i] = 0;
-            s_stop_time[i]  = 0;
+            sStep[i] = new StepItem(0, 0, 0);
         }
 
         stepRecFilePath = new File(context.getFilesDir(),
@@ -86,10 +93,10 @@ public class StepStateSaver {
 
             // Load saved data
             for (int i = MAX_STEP_SAVE-1; i >= m; i--) {
-                s_step      [i - m] = stepRecFile.readLong();
-                s_start_time[i - m] = stepRecFile.readLong();
-                s_stop_time [i - m] = stepRecFile.readLong();
-                Log.i("StepStateSaver", "StepStateSaver(): load step " + s_step[i - m]);
+                sStep[i - m].count      = stepRecFile.readLong();
+                sStep[i - m].start_time = stepRecFile.readLong();
+                sStep[i - m].stop_time  = stepRecFile.readLong();
+                Log.i("StepStateSaver", "StepStateSaver(): load step " + sStep[i - m].count);
             }
             stepRecFile.close();
         } catch (FileNotFoundException e) {
@@ -119,9 +126,9 @@ public class StepStateSaver {
                 return;
             }
             stepRecFile.seek(stepRecFile.length() - 3*BYTE_OF_LONG);
-            stepRecFile.writeLong(s_step[0]);
-            stepRecFile.writeLong(s_start_time[0]);
-            stepRecFile.writeLong(s_stop_time[0]);
+            stepRecFile.writeLong(sStep[0].count);
+            stepRecFile.writeLong(sStep[0].start_time);
+            stepRecFile.writeLong(sStep[0].stop_time);
             stepRecFile.close();
             Log.i("StepStateSaver", "restartCounter(): data updated");
         } catch (IOException e) {
@@ -154,9 +161,9 @@ public class StepStateSaver {
     public void restartCounter() {
         if (stepSince() == 0) {
             // No new step
-            if (s_step[0] == 0) {
+            if (sStep[0].count == 0) {
                 // merge record
-                s_stop_time[0] = java.lang.System.currentTimeMillis();
+                sStep[0].stop_time = java.lang.System.currentTimeMillis();
                 resetCounter();
                 updateStepFile();
                 return;
@@ -165,14 +172,14 @@ public class StepStateSaver {
         }
 
         // save new value and shift old values
+        StepItem tmpStep = sStep[MAX_STEP_SAVE-1];  // shallow copy
         for (int i = MAX_STEP_SAVE-1; i > 0; i--) {
-            s_step[i]       = s_step[i-1];
-            s_start_time[i] = s_start_time[i-1];
-            s_stop_time[i]  = s_stop_time[i-1];
+            sStep[i] = sStep[i-1];
         }
-        s_step[0] = stepSince();
-        s_start_time[0] = lastStepDateTime;
-        s_stop_time[0] = java.lang.System.currentTimeMillis();
+        sStep[0] = tmpStep;
+        sStep[0].count      = stepSince();
+        sStep[0].start_time = lastStepDateTime;
+        sStep[0].stop_time  = java.lang.System.currentTimeMillis();
         resetCounter();
 
         // Save to file
@@ -181,9 +188,9 @@ public class StepStateSaver {
             stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
             Log.i("StepStateSaver", "restartCounter(): file open");
             stepRecFile.seek(stepRecFile.length());
-            stepRecFile.writeLong(s_step[0]);
-            stepRecFile.writeLong(s_start_time[0]);
-            stepRecFile.writeLong(s_stop_time[0]);
+            stepRecFile.writeLong(sStep[0].count);
+            stepRecFile.writeLong(sStep[0].start_time);
+            stepRecFile.writeLong(sStep[0].stop_time);
 
             long l = stepRecFile.length();
             Log.i("StepStateSaver", "Now record with length " + l);

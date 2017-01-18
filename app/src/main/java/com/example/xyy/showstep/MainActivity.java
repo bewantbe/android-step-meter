@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         listView_step_rec = (ListView) findViewById(R.id.listView_step_rec);
-        listView_step_rec.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, getStepList()));
+        listView_step_rec.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getStepList()));
     }
 
     @Override
@@ -81,17 +81,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private List<String> getStepList() {
         List<String> data = new ArrayList<String>();
         for (int i = 0; i < stepState.MAX_STEP_SAVE; i++) {
-            if (stepState.s_stop_time[i] == 0) {
+            if (stepState.sStep[i].stop_time == 0) {
                 continue;
             }
-            data.add("S=" + stepState.s_step[i]
-                    + "  " + ISOTime(stepState.s_start_time[i])
-                    + "\n   To " + ISOTime(stepState.s_stop_time[i]));
+            data.add("S=" + stepState.sStep[i].count
+                    + "  " + ISOTime(stepState.sStep[i].start_time)
+                    + "\n   To " + ISOTime(stepState.sStep[i].stop_time));
         }
         return data;
     }
 
     public void updateView() {
+        // Maybe use notifyDataSetChanged()?
         listView_step_rec.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, getStepList()));
         listView_step_rec.invalidate();
         tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.lastStepDateTime));
