@@ -56,9 +56,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-
-        Log.e("Main", "Default path = " + getFilesDir());
-
         Log.i("onResume", "() - 1");
         mSensorManager.registerListener(this, mSensorStep, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -68,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onPause();
         Log.d("onPause", "()");
         mSensorManager.unregisterListener(this);
-        stepState.saveState();
     }
 
     @Override

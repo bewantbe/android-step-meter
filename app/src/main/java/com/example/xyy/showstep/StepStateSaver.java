@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,9 +24,10 @@ public class StepStateSaver {
     public long s_start_time[] = null;
     public long s_stop_time[] = null;
 
-    final int BYTE_OF_LONG = 64;
+    final int BYTE_OF_LONG = 8;
 
     private Context context = null;
+    private File stepRecFilePath = null;
 
     // context = MainActivity.this
     public StepStateSaver(Context _context) {
@@ -38,37 +38,43 @@ public class StepStateSaver {
         long lastStepDateTimeDefault = java.lang.System.currentTimeMillis()
                 - android.os.SystemClock.elapsedRealtime();
 
-        // Save last step and boot time and last step time
         SharedPreferences sharedPref = context.getSharedPreferences("SP", Context.MODE_PRIVATE);
         lastStep         = sharedPref.getLong("lastStep", lastStepDefault);
         lastStepDateTime = sharedPref.getLong("lastStepDateTime", lastStepDateTimeDefault);
 
-        if (lastStepDateTime != lastStepDateTimeDefault) {
-            // The phone was rebooted. In the future, we might use absolute step since app installed.
+        if (lastStepDateTimeDefault - lastStepDateTime > 100) {
+            // The phone was rebooted.
+            // In the future, we might use absolute step since app installed.
             lastStep = 0;
             lastStepDateTime = lastStepDateTimeDefault;
         }
 
-        s_step = new long[MAX_STEP_SAVE];
+        s_step       = new long[MAX_STEP_SAVE];
         s_start_time = new long[MAX_STEP_SAVE];
-        s_stop_time = new long[MAX_STEP_SAVE];
+        s_stop_time  = new long[MAX_STEP_SAVE];
         for (int i = MAX_STEP_SAVE-1; i >= 0; i--) {
             s_step[i]       = 0;
             s_start_time[i] = 0;
             s_stop_time[i]  = 0;
         }
 
-        /*
-        File stepRecFilePath = new File(context.getFilesDir(), "step_record");
+        stepRecFilePath = new File(context.getFilesDir(),
+                context.getString(R.string.step_record_file_name));
         RandomAccessFile stepRecFile = null;
         try {
+            // Without these two lines, there is "I/Process: Sending signal. PID: ???? SIG: 9" in mate 9.
+            FileOutputStream outputStream  = context.openFileOutput(stepRecFilePath.getName(), Context.MODE_APPEND);
+            outputStream.close();
+
             stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
             long l = stepRecFile.length();
             Log.i("StepStateSaver", "Found old record with length " + l);
             if (l % (3*BYTE_OF_LONG) != 0) {  // Try fix
+                Log.w("StepStateSaver", "StepStateSaver(): fixing step file.");
                 stepRecFile.setLength(l - l % (3*BYTE_OF_LONG));
                 l = stepRecFile.length();
             }
+            Log.i("StepStateSaver", "StepStateSaver(): step saved: " + l/(3*BYTE_OF_LONG));
             int m = 0;
             if (l/(3*BYTE_OF_LONG) < MAX_STEP_SAVE) {
                 m = MAX_STEP_SAVE - (int)(l/(3*BYTE_OF_LONG));
@@ -82,6 +88,7 @@ public class StepStateSaver {
                 s_step      [i - m] = stepRecFile.readLong();
                 s_start_time[i - m] = stepRecFile.readLong();
                 s_stop_time [i - m] = stepRecFile.readLong();
+                Log.i("StepStateSaver", "StepStateSaver(): load step " + s_step[i - m]);
             }
             stepRecFile.close();
         } catch (FileNotFoundException e) {
@@ -90,14 +97,14 @@ public class StepStateSaver {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
     }
 
     public void saveState() {
         // Save last step and boot time and last step time
         SharedPreferences sharedPref = context.getSharedPreferences("SP", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putLong("lastStep", lastStep);
+        editor.putLong("lastStep",         lastStep);
+        editor.putLong("lastStepDateTime", lastStepDateTime);
         editor.commit();
     }
 
@@ -119,60 +126,46 @@ public class StepStateSaver {
     public void resetCounter() {
         lastStep = step;
         lastStepDateTime = java.lang.System.currentTimeMillis();
+        saveState();
     }
 
     public void restartCounter() {
         if (stepSince() == 0) {
             // No new step. So do nothing
-            Log.i("StepStateSaver", "No new step. So do nothing");
             return;
         }
-        Log.i("StepStateSaver", "restartCounter()");
+
         // save new value and shift old values
         for (int i = MAX_STEP_SAVE-1; i > 0; i--) {
             s_step[i]       = s_step[i-1];
             s_start_time[i] = s_start_time[i-1];
             s_stop_time[i]  = s_stop_time[i-1];
         }
-        Log.i("StepStateSaver", "restartCounter(): shift");
         s_step[0] = stepSince();
         s_start_time[0] = lastStepDateTime;
         s_stop_time[0] = java.lang.System.currentTimeMillis();
-        Log.i("StepStateSaver", "restartCounter(): set step");
+        resetCounter();
 
         // Save to file
-        File stepRecFilePath = new File(context.getFilesDir(), "step_record.dat");
         Log.i("StepStateSaver", "restartCounter(): getFilesDir: " + stepRecFilePath.getAbsolutePath());
         RandomAccessFile stepRecFile = null;
         try {
-            stepRecFile = new RandomAccessFile(stepRecFilePath, "w");
+            stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
             Log.i("StepStateSaver", "restartCounter(): file open");
             stepRecFile.seek(stepRecFile.length());
             stepRecFile.writeLong(s_step[0]);
             stepRecFile.writeLong(s_start_time[0]);
             stepRecFile.writeLong(s_stop_time[0]);
+
+            long l = stepRecFile.length();
+            Log.i("StepStateSaver", "Now record with length " + l);
+
             stepRecFile.close();
             Log.i("StepStateSaver", "restartCounter(): data written");
         } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("StepStateSaver", "restartCounter(): IOException");
-        }
-
-        /*
-        String FILENAME = "hello_file";
-        String string = "hello world!";
-        FileOutputStream fos = null;
-        try {
-            fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(string.getBytes());
-            fos.close();
-        } catch (IOException e) {
+            Log.e("StepStateSaver", "restartCounter(): IOException");
             e.printStackTrace();
         }
-        */
-
-        resetCounter();
-        Log.i("StepStateSaver", "restartCounter(): resetCounter()");
     }
 
     public long stepSince() {
