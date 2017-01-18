@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="120sp"
+        android:layout_width="110sp"
         android:layout_height="33sp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="No.Steps"

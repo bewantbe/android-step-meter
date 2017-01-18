@@ -14,10 +14,31 @@ import android.widget.TextView;
 
 public class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
     private LayoutInflater mInflater;
+    private int resource;
+    private int len = 0;
+    private StepStateSaver.StepItem[] s_step_date = null;
 
-    public StepListAdapter(Context context, int resource, StepStateSaver.StepItem[] step_date) {
-        super(context, resource, step_date);
-        this.mInflater = LayoutInflater.from(context);
+    @Override
+    //public int getCount() { return len; }
+    public int getCount() {
+        while (len < s_step_date.length && s_step_date[len].stop_time != 0) {
+            len ++;
+        }
+        while (len > 0 && s_step_date[len-1].stop_time == 0) {
+            len --;
+        }
+        return len;
+    }
+
+    public StepListAdapter(Context context, int _resource, StepStateSaver.StepItem[] _s_step_date) {
+        super(context, _resource, _s_step_date);
+        mInflater = LayoutInflater.from(context);
+        resource = _resource;
+        s_step_date = _s_step_date;
+    }
+
+    CharSequence ISOTime(long tm) {
+        return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", tm);
     }
 
     @Override
@@ -26,11 +47,11 @@ public class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
         StepStateSaver.StepItem step = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.step_date_list_item_1, parent, false);
+            convertView = mInflater.inflate(resource, parent, false);
         }
         ((TextView) convertView.findViewById(R.id.text1)).setText("S = " + step.count);
         ((TextView) convertView.findViewById(R.id.text2)).setText(
-                "From " + step.start_time + "  To " + step.stop_time);
+                "From " + ISOTime(step.start_time) + "\n  To " + ISOTime(step.stop_time));
         return convertView;
     }
 }
