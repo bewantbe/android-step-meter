@@ -43,11 +43,10 @@
         android:layout_height="wrap_content"
         android:text="@string/button_restart"
         android:id="@+id/button_restart_counter"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/button_reset_counter"
-        android:layout_toEndOf="@+id/button_reset_counter"
         android:layout_marginLeft="54dp"
-        android:layout_marginStart="54dp"
-        android:onClick="counterButton" />
+        android:onClick="counterButton"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/button_reset_counter"
+        android:layout_marginStart="18dp" />
 
 </RelativeLayout>

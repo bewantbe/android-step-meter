@@ -6,6 +6,7 @@ package com.example.xyy.showstep;
  */
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,12 @@ public class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
     @Override
     //public int getCount() { return len; }
     public int getCount() {
+        if (s_step_date == null) {
+            Log.e("StepListAdapter", "s_step_date == null: should not happen!!");
+            return 0;
+        }
+        // Is there simpler way to skip empty record?
+        // Will this help notifyDataSetChanged() ?
         while (len < s_step_date.length && s_step_date[len].stop_time != 0) {
             len ++;
         }

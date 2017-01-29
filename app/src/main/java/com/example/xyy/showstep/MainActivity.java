@@ -43,8 +43,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Then ??
         }
 
+        // Help on ListView
+        // https://developer.xamarin.com/guides/android/user_interface/working_with_listviews_and_adapters/part_2_-_populating_a_listview_with_data/
+        // https://github.com/codepath/android_guides/wiki/Using-an-ArrayAdapter-with-ListView
+        // http://www.vogella.com/tutorials/AndroidListView/article.html
+
         listView_step_rec = (ListView) findViewById(R.id.listView_step_rec);
-        //listView_step_rec.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getStepList()));
         listView_step_rec.setAdapter(new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
     }
 
@@ -94,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void updateView() {
         // Maybe use notifyDataSetChanged()?
-        //listView_step_rec.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, getStepList()));
         listView_step_rec.setAdapter(new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
         listView_step_rec.invalidate();
         tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.lastStepDateTime));
