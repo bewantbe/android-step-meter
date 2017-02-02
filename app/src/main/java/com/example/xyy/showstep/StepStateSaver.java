@@ -95,4 +95,6 @@ class StepStateSaver {
     long stepSince() {
         return currentStepState.count - lastStepState.count;
     }
+    long stepSinceTime() { return lastStepState.stop_time; }
+    long stepCurrentTime() { return currentStepState.stop_time; }
 }

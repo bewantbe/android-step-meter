@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Maybe use notifyDataSetChanged()?
         listView_step_rec.setAdapter(new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
         listView_step_rec.invalidate();
-        tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.lastStepDateTime));
+        tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.stepSinceTime()) + "\n To " + ISOTime(stepState.stepCurrentTime()));
     }
 
     // Sensor events process
@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             event_cnt++;
-            stepState.putStep((long) event.values[0], event.timestamp);
+            stepState.putStep((long) event.values[0],
+                    java.lang.System.currentTimeMillis()); // event.timestamp is a bit complicated hence avoid.
             updateView();
         }
     }

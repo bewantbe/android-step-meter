@@ -15,6 +15,7 @@ import java.io.RandomAccessFile;
  */
 
 class StepFileAccess {
+    final static String TAG = "StepFileAccess";
     private final int BYTE_OF_LONG = 8;
     private File stepRecFilePath = null;
     private Context context = null;
@@ -56,7 +57,7 @@ class StepFileAccess {
 
     // Load recent step records in file (R.string.step_record_file_name).
     void loadRecords(StepStateSaver.StepItem sStep[], int MAX_STEP_SAVE) {
-        Log.i("StepStateSaver", "restartCounter(): getFilesDir: " + stepRecFilePath.getAbsolutePath());
+        Log.i(TAG, "loadRecords(): getFilesDir: " + stepRecFilePath.getAbsolutePath());
         RandomAccessFile stepRecFile;
         try {
             // Without these two lines, there is "I/Process: Sending signal. PID: ???? SIG: 9" in mate 9.
@@ -65,13 +66,13 @@ class StepFileAccess {
 
             stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
             long l = stepRecFile.length();
-            Log.i("StepStateSaver", "Found old record with length " + l);
+            Log.i(TAG, "Found old record with length " + l);
             if (l % (3*BYTE_OF_LONG) != 0) {  // Try fix broken file.
-                Log.w("StepStateSaver", "StepStateSaver(): fixing step file.");
+                Log.w(TAG, "StepStateSaver(): fixing step file.");
                 stepRecFile.setLength(l - l % (3*BYTE_OF_LONG));
                 l = stepRecFile.length();
             }
-            Log.i("StepStateSaver", "StepStateSaver(): step saved: " + l/(3*BYTE_OF_LONG));
+            Log.i(TAG, "loadRecords(): step saved: " + l/(3*BYTE_OF_LONG));
             int m = 0;
             if (l/(3*BYTE_OF_LONG) < MAX_STEP_SAVE) {
                 m = MAX_STEP_SAVE - (int)(l/(3*BYTE_OF_LONG));
@@ -85,12 +86,12 @@ class StepFileAccess {
                 sStep[i - m].count      = stepRecFile.readLong();
                 sStep[i - m].start_time = stepRecFile.readLong();
                 sStep[i - m].stop_time  = stepRecFile.readLong();
-                Log.i("StepStateSaver", "StepStateSaver(): load step " + sStep[i - m].count);
+                Log.i(TAG, "loadRecords(): load step " + sStep[i - m].count);
             }
             stepRecFile.close();
         } catch (FileNotFoundException e) {
             // Nothing have to be done
-            Log.i("StepStateSaver", "No old record found");
+            Log.i(TAG, "No old record found");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,19 +102,19 @@ class StepFileAccess {
         RandomAccessFile stepRecFile;
         try {
             stepRecFile = new RandomAccessFile(stepRecFilePath, "rw");
-            Log.i("StepStateSaver", "restartCounter(): file open");
+            Log.i(TAG, "addOneRecord(): file open");
             stepRecFile.seek(stepRecFile.length());
             stepRecFile.writeLong(stepItem.count);
             stepRecFile.writeLong(stepItem.start_time);
             stepRecFile.writeLong(stepItem.stop_time);
 
             long l = stepRecFile.length();
-            Log.i("StepStateSaver", "Now record with length " + l);
+            Log.i(TAG, "Now record with length " + l);
 
             stepRecFile.close();
-            Log.i("StepStateSaver", "restartCounter(): data written");
+            Log.i(TAG, "addOneRecord(): data written");
         } catch (IOException e) {
-            Log.e("StepStateSaver", "restartCounter(): IOException");
+            Log.e(TAG, "addOneRecord(): IOException");
             e.printStackTrace();
         }
     }
@@ -132,9 +133,9 @@ class StepFileAccess {
             stepRecFile.writeLong(stepItem.start_time);
             stepRecFile.writeLong(stepItem.stop_time);
             stepRecFile.close();
-            Log.i("StepStateSaver", "restartCounter(): data updated");
+            Log.i(TAG, "overwriteLastRecord(): data updated");
         } catch (IOException e) {
-            Log.e("StepStateSaver", "restartCounter(): IOException");
+            Log.e(TAG, "overwriteLastRecord(): IOException");
             e.printStackTrace();
         }
     }
