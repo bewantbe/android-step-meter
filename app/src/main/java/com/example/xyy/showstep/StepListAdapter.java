@@ -6,6 +6,7 @@ package com.example.xyy.showstep;
  */
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +14,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
+class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
     private LayoutInflater mInflater;
     private int resource;
     private int len = 0;
     private StepStateSaver.StepItem[] s_step_date = null;
 
+    StepListAdapter(Context context, int _resource, StepStateSaver.StepItem[] _s_step_date) {
+        super(context, _resource, _s_step_date);
+        mInflater = LayoutInflater.from(context);
+        resource = _resource;
+        s_step_date = _s_step_date;
+    }
+
     @Override
-    //public int getCount() { return len; }
     public int getCount() {
         if (s_step_date == null) {
             Log.e("StepListAdapter", "s_step_date == null: should not happen!!");
@@ -37,19 +44,12 @@ public class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
         return len;
     }
 
-    public StepListAdapter(Context context, int _resource, StepStateSaver.StepItem[] _s_step_date) {
-        super(context, _resource, _s_step_date);
-        mInflater = LayoutInflater.from(context);
-        resource = _resource;
-        s_step_date = _s_step_date;
-    }
-
-    CharSequence ISOTime(long tm) {
+    private CharSequence ISOTime(long tm) {
         return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", tm);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
         StepStateSaver.StepItem step = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view

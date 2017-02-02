@@ -33,9 +33,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorStep = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        // the number of steps taken by the user since the last reboot while the sensor was activated
 
         stepState = new StepStateSaver(MainActivity.this);
+
+        // Summary view
+        // Shows the number of steps taken by the user since the last reboot while the sensor was activated
         tv_step = (TextView) findViewById(R.id.tv_step);
         if (mSensorStep == null) {
             // No this sensor
@@ -48,8 +50,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // https://github.com/codepath/android_guides/wiki/Using-an-ArrayAdapter-with-ListView
         // http://www.vogella.com/tutorials/AndroidListView/article.html
 
+        // List view for each record
         listView_step_rec = (ListView) findViewById(R.id.listView_step_rec);
-        listView_step_rec.setAdapter(new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
+        listView_step_rec.setAdapter(
+                new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
     }
 
     @Override
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             event_cnt++;
-            stepState.putStep((long) event.values[0]);
+            stepState.putStep((long) event.values[0], event.timestamp);
             updateView();
         }
     }
