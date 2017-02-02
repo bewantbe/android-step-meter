@@ -87,19 +87,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", tm);
     }
 
-    private List<String> getStepList() {
-        List<String> data = new ArrayList<String>();
-        for (int i = 0; i < stepState.MAX_STEP_SAVE; i++) {
-            if (stepState.sStep[i].stop_time == 0) {
-                continue;
-            }
-            data.add("S=" + stepState.sStep[i].count
-                    + "  " + ISOTime(stepState.sStep[i].start_time)
-                    + "\n   To " + ISOTime(stepState.sStep[i].stop_time));
-        }
-        return data;
-    }
-
     public void updateView() {
         // Maybe use notifyDataSetChanged()?
         listView_step_rec.setAdapter(new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
