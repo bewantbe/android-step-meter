@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     TextView tv_step = null;
     ListView listView_step_rec = null;
+    StepListAdapter stepListAdapter = null;
 
     private StepStateSaver stepState = null;
 
@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // http://www.vogella.com/tutorials/AndroidListView/article.html
 
         // List view for each record
+        stepListAdapter = new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep);
         listView_step_rec = (ListView) findViewById(R.id.listView_step_rec);
-        listView_step_rec.setAdapter(
-                new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
+        listView_step_rec.setAdapter(stepListAdapter);
     }
 
     @Override
@@ -88,9 +88,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void updateView() {
-        // Maybe use notifyDataSetChanged()?
-        listView_step_rec.setAdapter(new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep));
-        listView_step_rec.invalidate();
+        stepListAdapter.notifyDataSetChanged();
         tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.stepSinceTime()) + "\n To " + ISOTime(stepState.stepCurrentTime()));
     }
 
