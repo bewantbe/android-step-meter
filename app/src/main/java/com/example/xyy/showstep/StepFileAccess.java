@@ -72,7 +72,7 @@ class StepFileAccess {
                 stepRecFile.setLength(l - l % (3*BYTE_OF_LONG));
                 l = stepRecFile.length();
             }
-            Log.i(TAG, "loadRecords(): step saved: " + l/(3*BYTE_OF_LONG));
+            Log.i(TAG, "loadRecords(): step states saved: " + l/(3*BYTE_OF_LONG));
             int m = 0;
             if (l/(3*BYTE_OF_LONG) < MAX_STEP_SAVE) {
                 m = MAX_STEP_SAVE - (int)(l/(3*BYTE_OF_LONG));

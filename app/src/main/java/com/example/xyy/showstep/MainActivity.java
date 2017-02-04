@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         stepListAdapter = new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep);
         listView_step_rec = (ListView) findViewById(R.id.listView_step_rec);
         listView_step_rec.setAdapter(stepListAdapter);
+        listView_step_rec.smoothScrollToPosition(listView_step_rec.getCount()-1);
     }
 
     @Override
@@ -89,7 +90,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void updateView() {
         stepListAdapter.notifyDataSetChanged();
-        tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.stepSinceTime()) + "\n To " + ISOTime(stepState.stepCurrentTime()));
+        listView_step_rec.smoothScrollToPosition(listView_step_rec.getCount()-1);
+        tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.stepSinceTime()));
     }
 
     // Sensor events process
@@ -113,11 +115,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Button event
     public void counterButton(View view) {
         switch (view.getId()) {
-            case R.id.button_reset_counter:
-                Log.w("counterButton", "resetCounter Pressed");
-                stepState.resetCounter();
-                updateView();
-                break;
+//            case R.id.button_reset_counter:
+//                Log.w("counterButton", "resetCounter Pressed");
+//                stepState.resetCounter();
+//                updateView();
+//                break;
             case R.id.button_restart_counter:
                 Log.w("counterButton", "restartCounter Pressed");
                 stepState.restartCounter();

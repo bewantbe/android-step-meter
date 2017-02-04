@@ -3,4 +3,5 @@
     <string name="button_reset">Reset Counter</string>
     <string name="button_restart">Restart Counter</string>
     <string name="step_record_file_name">step_record.dat</string>
+    <string name="textview_current_step_empty">Step = \nSince </string>
 </resources>

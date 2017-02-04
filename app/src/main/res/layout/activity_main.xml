@@ -9,45 +9,34 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.xyy.showstep.MainActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/tv_step"
-        android:textSize="20sp" />
-
     <ListView
+        android:id="@+id/listView_step_rec"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView_step_rec"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/tv_step"
-        android:layout_above="@+id/button_reset_counter"
+        android:layout_above="@+id/tv_step"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         tools:listitem="@layout/step_date_list_item_1"
-        android:stackFromBottom="false" />
+        android:stackFromBottom="true" />
+
+    <TextView
+        android:id="@+id/tv_step"
+        android:text="@string/textview_current_step_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_restart_counter"
+        android:layout_marginBottom="20dp"
+        android:textSize="20sp" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_reset"
-        android:id="@+id/button_reset_counter"
-        android:onClick="counterButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_restart"
         android:id="@+id/button_restart_counter"
-        android:layout_marginLeft="54dp"
+        android:text="@string/button_restart"
         android:onClick="counterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/button_reset_counter"
         android:layout_marginStart="18dp" />
 
 </RelativeLayout>

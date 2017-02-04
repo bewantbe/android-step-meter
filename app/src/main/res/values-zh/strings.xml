@@ -3,4 +3,5 @@
     <string name="app_name">记步器</string>
     <string name="button_reset">记步清零</string>
     <string name="button_restart">开新记录</string>
+    <string name="textview_current_step_empty">步数 = \n自 </string>
 </resources>
