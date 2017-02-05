@@ -24,7 +24,7 @@ class StepStateSaver {
     private StepFileAccess stepFile = null;
     private StepItem lastStepState;
     private StepItem currentStepState;   // Current step and time
-    int MAX_STEP_SAVE = 20;              // Max number of step states saved and shown
+    int MAX_STEP_SAVE = 50;              // Max number of step states saved and shown
     StepItem sStep[] = null;
 
     StepStateSaver(Context context) {

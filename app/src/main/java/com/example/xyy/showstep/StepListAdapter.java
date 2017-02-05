@@ -76,7 +76,7 @@ class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
 
     @Override
     public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        // Get the data item for this position
+        // Get the data item for this position, in reverse order
         StepStateSaver.StepItem step = getItem(len - position - 1);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -85,12 +85,23 @@ class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
         if (step != null) {
             CharSequence cs1 = ISOTime(step.start_time);
             CharSequence cs2 = ISOTime(step.stop_time);
-            int pos = TimeDiffPosition(cs1, cs2);
+            int pos1 = 0;
+            if (position > 0) {  // if not the oldest record
+                // if in the same day as previous record, then do not show date
+                StepStateSaver.StepItem step_old = getItem(len - position);
+                if (step_old != null) {
+                    CharSequence cs_previous = ISOTime(step_old.stop_time);
+                    pos1 = Math.min(TimeDiffPosition(cs_previous, cs1),
+                                    TimeDiffPosition(cs_previous, cs2));
+                }
+            }
+            int pos2 = TimeDiffPosition(cs1, cs2);
             ((TextView) convertView.findViewById(R.id.text1)).setText(
                     context.getString(R.string.listview_step_template, step.count));
             ((TextView) convertView.findViewById(R.id.text2)).setText(
                     context.getString(R.string.listview_step_time_template,
-                            cs1, cs2.subSequence(pos, cs2.length())));
+                            cs1.subSequence(pos1, cs1.length()),
+                            cs2.subSequence(pos2, cs2.length())));
         } else {
             ((TextView) convertView.findViewById(R.id.text1)).setText("");
             ((TextView) convertView.findViewById(R.id.text2)).setText("");

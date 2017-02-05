@@ -5,8 +5,9 @@
     <string name="button_restart">开新记录</string>
     <string name="textview_current_step_empty">步数 = \n自 </string>
     <string name="textview_current_step_template">步数: %1$d\n自 %2$s</string>
-    <string name="listview_step_template">%1$d 步</string>
+    <string name="listview_step_template">%1$6d</string>
     <string name="listview_step_time_template">自 %1$19s\n至 %2$19s</string>
 
+    <string name="step_record_file_name">step_record.dat</string>
     <string name="no_step_sensor">"没有记步器"</string>
 </resources>
