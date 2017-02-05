@@ -17,5 +17,6 @@
         android:text="From Date and time\n  To Date and time"
         android:typeface="monospace"
         android:id="@+id/text2"
-        android:layout_gravity="right" />
+        android:layout_gravity="right"
+        android:gravity="left" />
 </LinearLayout>
