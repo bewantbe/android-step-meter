@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tv_step = (TextView) findViewById(R.id.tv_step);
         if (mSensorStep == null) {
             // No this sensor
-            tv_step.setText("No this sensor");
+            tv_step.setText(getString(R.string.no_step_sensor));
             // Then ??
         }
 
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         stepListAdapter = new StepListAdapter(this, R.layout.step_date_list_item_1, stepState.sStep);
         listView_step_rec = (ListView) findViewById(R.id.listView_step_rec);
         listView_step_rec.setAdapter(stepListAdapter);
-        listView_step_rec.smoothScrollToPosition(listView_step_rec.getCount()-1);
+        setListViewToBottom();
     }
 
     @Override
@@ -88,10 +88,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", tm);
     }
 
+    void setListViewToBottom() {
+        listView_step_rec.smoothScrollToPosition(listView_step_rec.getCount()-1);
+    }
+
     public void updateView() {
         stepListAdapter.notifyDataSetChanged();
-        listView_step_rec.smoothScrollToPosition(listView_step_rec.getCount()-1);
-        tv_step.setText("Step = " + stepState.stepSince() + "\nSince " + ISOTime(stepState.stepSinceTime()));
+        tv_step.setText(getString(
+                R.string.textview_current_step_template,
+                stepState.stepSince(),
+                ISOTime(stepState.stepSinceTime())));
     }
 
     // Sensor events process
@@ -119,11 +125,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                Log.w("counterButton", "resetCounter Pressed");
 //                stepState.resetCounter();
 //                updateView();
+//                setListViewToBottom();
 //                break;
             case R.id.button_restart_counter:
                 Log.w("counterButton", "restartCounter Pressed");
                 stepState.restartCounter();
                 updateView();
+                setListViewToBottom();
                 break;
             default:
                 Log.e("counterButton", "Pressed unknown button");

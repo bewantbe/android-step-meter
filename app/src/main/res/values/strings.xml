@@ -2,6 +2,11 @@
     <string name="app_name">ShowStep</string>
     <string name="button_reset">Reset Counter</string>
     <string name="button_restart">Restart Counter</string>
-    <string name="step_record_file_name">step_record.dat</string>
     <string name="textview_current_step_empty">Step = \nSince </string>
+    <string name="textview_current_step_template">Step: %1$d\nSince %2$s</string>
+    <string name="listview_step_template">S = %1$d</string>
+    <string name="listview_step_time_template">From %1$19s\n  To %2$19s</string>
+
+    <string name="step_record_file_name">step_record.dat</string>
+    <string name="no_step_sensor">"No step sensor found"</string>
 </resources>

@@ -19,9 +19,11 @@ class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
     private int resource;
     private int len = 0;
     private StepStateSaver.StepItem[] s_step_data = null;
+    private Context context;
 
-    StepListAdapter(Context context, int _resource, StepStateSaver.StepItem[] _s_step_date) {
-        super(context, _resource, _s_step_date);
+    StepListAdapter(Context _context, int _resource, StepStateSaver.StepItem[] _s_step_date) {
+        super(_context, _resource, _s_step_date);
+        context = _context;
         mInflater = LayoutInflater.from(context);
         resource = _resource;
         s_step_data = _s_step_date;
@@ -51,6 +53,27 @@ class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
         return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", tm);
     }
 
+    private int TimeDiffPositionRaw(CharSequence st1, CharSequence st2) {
+        int i = 0;
+        // st1 and st2 are the same up-to i.
+        while (i < st1.length() && i < st2.length()) {
+            if (st1.charAt(i) != st2.charAt(i)) {
+                break;
+            }
+            i++;
+        }
+        return i;
+    }
+
+    private int TimeDiffPosition(CharSequence st1, CharSequence st2) {
+        int i = TimeDiffPositionRaw(st1, st2);
+        if (i < 5) i = 0;
+        else if (i < 8) i = 5;
+        else if (i < 11) i = 8;
+        else i = 11;
+        return i;
+    }
+
     @Override
     public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Get the data item for this position
@@ -59,9 +82,19 @@ class StepListAdapter extends ArrayAdapter<StepStateSaver.StepItem> {
         if (convertView == null) {
             convertView = mInflater.inflate(resource, parent, false);
         }
-        ((TextView) convertView.findViewById(R.id.text1)).setText("S = " + step.count);
-        ((TextView) convertView.findViewById(R.id.text2)).setText(
-                "From " + ISOTime(step.start_time) + "\n  To " + ISOTime(step.stop_time));
+        if (step != null) {
+            CharSequence cs1 = ISOTime(step.start_time);
+            CharSequence cs2 = ISOTime(step.stop_time);
+            int pos = TimeDiffPosition(cs1, cs2);
+            ((TextView) convertView.findViewById(R.id.text1)).setText(
+                    context.getString(R.string.listview_step_template, step.count));
+            ((TextView) convertView.findViewById(R.id.text2)).setText(
+                    context.getString(R.string.listview_step_time_template,
+                            cs1, cs2.subSequence(pos, cs2.length())));
+        } else {
+            ((TextView) convertView.findViewById(R.id.text1)).setText("");
+            ((TextView) convertView.findViewById(R.id.text2)).setText("");
+        }
         return convertView;
     }
 }
