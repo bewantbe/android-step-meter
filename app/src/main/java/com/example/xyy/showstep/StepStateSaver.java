@@ -25,7 +25,7 @@ class StepStateSaver {
     private StepItem lastStepState;
     private StepItem currentStepState;   // Current step and time
     int MAX_STEP_SAVE = 50;              // Max number of step states saved and shown
-    StepItem sStep[] = null;
+    StepItem[] sStep = null;
 
     StepStateSaver(Context context) {
         // Usually context = MainActivity.this

@@ -56,7 +56,7 @@ class StepFileAccess {
     }
 
     // Load recent step records in file (R.string.step_record_file_name).
-    void loadRecords(StepStateSaver.StepItem sStep[], int MAX_STEP_SAVE) {
+    void loadRecords(StepStateSaver.StepItem[] sStep, int MAX_STEP_SAVE) {
         Log.i(TAG, "loadRecords(): getFilesDir: " + stepRecFilePath.getAbsolutePath());
         RandomAccessFile stepRecFile;
         try {
